@@ -9,7 +9,7 @@ print(df.shape)
 df.columns=df.columns.str.strip().str.replace(' ','_')  # Remove/replace any leading/trailing whitespace from column names
 print(df.isnull())#all are false meanig no empty values
 print(df.dtypes)
-print(df.describe())
+print(df.describe()) wurugfj kfhkjghkksh 
 print(df.info())
 # sns.histplot(df['electricity_cost'],kde=True)
 # plt.show()
