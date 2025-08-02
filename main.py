@@ -1,21 +1,27 @@
 print("🚀 THIS IS THE CORRECT main.py FILE")
 
 import joblib
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, Form
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
-import numpy as np
 
 # Load the trained model
 model = joblib.load("best_rf_model.pkl")
 
 app = FastAPI(title="Electricity Cost Predictor")
-@app.get("/")
-def home():
-    return {"message": "THIS IS THE REAL APP"}
+
+# Load templates
+templates = Jinja2Templates(directory="templates")
+
+@app.get("/", response_class=HTMLResponse)
+def home(request: Request):
+    return templates.TemplateResponse("form.html", {"request": request})
+
 # Define input schema
 class ElectricityInput(BaseModel):
     site_area: int
-    structure_type: str  # One of: Commercial, Industrial, Mixed-use, Residential
+    structure_type: str
     water_consumption: float
     recycling_rate: int
     utilisation_rate: int
@@ -31,16 +37,13 @@ def encode_structure_type(structure_type: str):
         return [0, 1, 0]
     elif structure_type == "Residential":
         return [0, 0, 1]
-    else:  # Commercial (baseline)
+    else:  # Commercial
         return [0, 0, 0]
 
-# Prediction endpoint
+# API POST endpoint
 @app.post("/predict")
 def predict_cost(input_data: ElectricityInput):
-    # Encode categorical feature
     structure_encoding = encode_structure_type(input_data.structure_type)
-
-    # Form the feature vector (ordered to match training)
     features = [
         input_data.site_area,
         input_data.water_consumption,
@@ -49,7 +52,36 @@ def predict_cost(input_data: ElectricityInput):
         input_data.air_qality_index,
         input_data.issue_reolution_time,
         input_data.resident_count,
-    ] + structure_encoding  # 3 encoded features
-
+    ] + structure_encoding
     prediction = model.predict([features])
     return {"predicted_electricity_cost": round(prediction[0], 2)}
+
+# Web form submission
+@app.post("/predict_form", response_class=HTMLResponse)
+def predict_cost_form(
+    request: Request,
+    site_area: int = Form(...),
+    structure_type: str = Form(...),
+    water_consumption: float = Form(...),
+    recycling_rate: int = Form(...),
+    utilisation_rate: int = Form(...),
+    air_qality_index: int = Form(...),
+    issue_reolution_time: int = Form(...),
+    resident_count: int = Form(...)
+):
+    structure_encoding = encode_structure_type(structure_type)
+    features = [
+        site_area,
+        water_consumption,
+        recycling_rate,
+        utilisation_rate,
+        air_qality_index,
+        issue_reolution_time,
+        resident_count
+    ] + structure_encoding
+
+    prediction = model.predict([features])[0]
+    return templates.TemplateResponse("form.html", {
+        "request": request,
+        "prediction": round(prediction, 2)
+    })

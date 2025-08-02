@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Electricity Cost Predictor</title>
+</head>
+<body>
+    <h2>Electricity Cost Prediction</h2>
+    <form action="/predict_form" method="post">
+        <label>Site Area:</label>
+        <input type="number" name="site_area" required><br><br>
+
+        <label>Structure Type:</label>
+        <select name="structure_type">
+            <option value="Commercial">Commercial</option>
+            <option value="Industrial">Industrial</option>
+            <option value="Mixed-use">Mixed-use</option>
+            <option value="Residential">Residential</option>
+        </select><br><br>
+
+        <label>Water Consumption:</label>
+        <input type="number" step="0.01" name="water_consumption" required><br><br>
+
+        <label>Recycling Rate:</label>
+        <input type="number" name="recycling_rate" required><br><br>
+
+        <label>Utilisation Rate:</label>
+        <input type="number" name="utilisation_rate" required><br><br>
+
+        <label>Air Quality Index:</label>
+        <input type="number" name="air_qality_index" required><br><br>
+
+        <label>Issue Resolution Time:</label>
+        <input type="number" name="issue_reolution_time" required><br><br>
+
+        <label>Resident Count:</label>
+        <input type="number" name="resident_count" required><br><br>
+
+        <input type="submit" value="Predict">
+    </form>
+
+    {% if prediction is defined %}
+        <h3>Predicted Electricity Cost: ₹{{ prediction }}</h3>
+    {% endif %}
+</body>
+</html>
