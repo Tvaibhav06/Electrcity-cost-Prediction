@@ -16,7 +16,7 @@ templates = Jinja2Templates(directory="templates")
 
 @app.get("/", response_class=HTMLResponse)
 def home(request: Request):
-    return templates.TemplateResponse("form.html", {"request": request})
+    return templates.TemplateResponse("front.html", {"request": request})
 
 # Define input schema
 class ElectricityInput(BaseModel):
@@ -82,7 +82,7 @@ def predict_cost_form(
     ] + structure_encoding
 
     prediction = model.predict([features])[0]
-    return templates.TemplateResponse("form.html", {
+    return templates.TemplateResponse("front.html", {
         "request": request,
         "prediction": round(prediction, 2)
     })
