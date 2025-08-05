@@ -1,4 +1,4 @@
-print("🚀 THIS IS THE CORRECT main.py FILE")
+print("🚀 THIS IS THE CORRECT main.py FILE!")
 
 import joblib
 from fastapi import FastAPI, Request, Form
@@ -28,6 +28,7 @@ class ElectricityInput(BaseModel):
     air_qality_index: int
     issue_reolution_time: int
     resident_count: int
+    
 
 # Encoding function
 def encode_structure_type(structure_type: str):
